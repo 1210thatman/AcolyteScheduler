@@ -81,6 +81,11 @@ export function MemberManager() {
     setIsModalOpen(false)
   }
 
+  function handleDelete(id) {
+    if (!window.confirm('이 단원을 삭제할까요?')) return
+    deleteMember(id)
+  }
+
   function handlePrevCountChange(e) {
     const value = parseInt(e.target.value, 10)
     if (isNaN(value) || value < 0) {
@@ -124,7 +129,10 @@ export function MemberManager() {
                   >
                     수정
                   </button>
-                  <button className="min-h-[40px] px-3 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg">
+                  <button
+                    className="min-h-[40px] px-3 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg"
+                    onClick={() => handleDelete(member.id)}
+                  >
                     삭제
                   </button>
                 </div>
