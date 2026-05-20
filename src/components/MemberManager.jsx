@@ -87,12 +87,12 @@ export function MemberManager() {
   }
 
   function handlePrevCountChange(e) {
-    const value = parseInt(e.target.value, 10)
-    if (isNaN(value) || value < 0) {
+    const raw = e.target.value.replace(/[^0-9]/g, '')
+    if (raw === '') {
       setForm(prev => ({ ...prev, prevCount: 0 }))
       return
     }
-    setForm(prev => ({ ...prev, prevCount: value }))
+    setForm(prev => ({ ...prev, prevCount: parseInt(raw, 10) }))
   }
 
   return (
@@ -193,11 +193,12 @@ export function MemberManager() {
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-semibold text-gray-700">전월 참여 횟수</label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className="min-h-[48px] px-3 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={form.prevCount}
                   onChange={handlePrevCountChange}
-                  min={0}
                 />
               </div>
 
