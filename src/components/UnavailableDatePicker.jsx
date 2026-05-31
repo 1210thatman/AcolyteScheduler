@@ -30,12 +30,33 @@ function getCalendarDays(year, month) {
 }
 
 export function UnavailableDatePicker() {
-  const { state, setMonth } = useScheduler()
+  const { state, setMonth, toggleUnavailableDate } = useScheduler()
   const { members, currentYear, currentMonth } = state
 
   const [selectedMemberId, setSelectedMemberId] = useState('')
+  const justTouched = useRef(false)
 
+  const selectedMember = members.find(m => m.id === selectedMemberId) || null
+  const unavailableDates = selectedMember ? selectedMember.unavailableDates : []
   const calendarDays = getCalendarDays(currentYear, currentMonth)
+
+  function handleToggle(dateStr) {
+    if (!selectedMemberId) return
+    toggleUnavailableDate(selectedMemberId, dateStr)
+  }
+
+  function handleTouchEnd(dateStr) {
+    justTouched.current = true
+    handleToggle(dateStr)
+    setTimeout(() => {
+      justTouched.current = false
+    }, 500)
+  }
+
+  function handleClick(dateStr) {
+    if (justTouched.current) return
+    handleToggle(dateStr)
+  }
 
   function handlePrevMonth() {
     if (currentMonth === 1) {
@@ -110,11 +131,29 @@ export function UnavailableDatePicker() {
             if (!dateStr) {
               return <div key={`empty-${index}`} className="aspect-square" />
             }
+
             const day = parseInt(dateStr.split('-')[2], 10)
+            const isUnavailable = unavailableDates.includes(dateStr)
+            const canSelect = !!selectedMemberId
+
+            let cellClass = 'aspect-square flex items-center justify-center text-sm select-none'
+            if (canSelect) {
+              cellClass += ' cursor-pointer active:opacity-70'
+            }
+            if (isUnavailable) {
+              cellClass += ' bg-red-500 text-white font-semibold'
+            } else if (canSelect) {
+              cellClass += ' text-gray-900'
+            } else {
+              cellClass += ' text-gray-400'
+            }
+
             return (
               <div
                 key={dateStr}
-                className="aspect-square flex items-center justify-center text-sm text-gray-400"
+                className={cellClass}
+                onClick={() => handleClick(dateStr)}
+                onTouchEnd={() => handleTouchEnd(dateStr)}
               >
                 {day}
               </div>
@@ -122,6 +161,18 @@ export function UnavailableDatePicker() {
           })}
         </div>
       </div>
+
+      {!selectedMemberId && members.length > 0 && (
+        <p className="text-center text-gray-500 text-sm mt-3">
+          단원을 선택하면 날짜를 눌러 참여 불가 날짜를 설정할 수 있습니다.
+        </p>
+      )}
+
+      {selectedMember && (
+        <p className="text-center text-sm mt-3 text-gray-500">
+          빨간 날짜 = <span className="font-semibold text-gray-700">{selectedMember.name}</span>의 참여 불가 날짜입니다.
+        </p>
+      )}
     </div>
   )
 }
