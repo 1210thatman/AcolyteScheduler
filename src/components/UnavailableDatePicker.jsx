@@ -30,12 +30,28 @@ function getCalendarDays(year, month) {
 }
 
 export function UnavailableDatePicker() {
-  const { state } = useScheduler()
+  const { state, setMonth } = useScheduler()
   const { members, currentYear, currentMonth } = state
 
   const [selectedMemberId, setSelectedMemberId] = useState('')
 
   const calendarDays = getCalendarDays(currentYear, currentMonth)
+
+  function handlePrevMonth() {
+    if (currentMonth === 1) {
+      setMonth(currentYear - 1, 12)
+    } else {
+      setMonth(currentYear, currentMonth - 1)
+    }
+  }
+
+  function handleNextMonth() {
+    if (currentMonth === 12) {
+      setMonth(currentYear + 1, 1)
+    } else {
+      setMonth(currentYear, currentMonth + 1)
+    }
+  }
 
   return (
     <div>
@@ -61,6 +77,24 @@ export function UnavailableDatePicker() {
             ))}
           </select>
         )}
+      </div>
+
+      <div className="flex items-center justify-between mb-3">
+        <button
+          className="min-h-[48px] px-4 py-3 bg-gray-200 text-gray-800 text-base font-semibold rounded-lg"
+          onClick={handlePrevMonth}
+        >
+          이전 달
+        </button>
+        <span className="text-base font-semibold text-gray-900">
+          {currentYear}년 {currentMonth}월
+        </span>
+        <button
+          className="min-h-[48px] px-4 py-3 bg-gray-200 text-gray-800 text-base font-semibold rounded-lg"
+          onClick={handleNextMonth}
+        >
+          다음 달
+        </button>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
