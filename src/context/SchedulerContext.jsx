@@ -86,8 +86,9 @@ export function SchedulerProvider({ children }) {
     setState(prev => ({ ...prev, currentYear: year, currentMonth: month }))
   }
 
-  // 5주차에 구현 예정
-  function runAutoSchedule() {}
+  function runAutoSchedule(assignments) {
+    setState(prev => ({ ...prev, assignments }))
+  }
 
   const value = {
     state,
