@@ -1,9 +1,13 @@
+import { useState } from 'react'
 import { useScheduler } from '../hooks/useScheduler'
 import { CalendarView } from '../components/CalendarView'
+import { EditModal } from '../components/EditModal'
 
 export default function CalendarPage() {
   const { state, setMonth } = useScheduler()
   const { currentYear, currentMonth, assignments } = state
+
+  const [editingDate, setEditingDate] = useState(null)
 
   function handlePrevMonth() {
     if (currentMonth === 1) {
@@ -48,7 +52,14 @@ export default function CalendarPage() {
           배정된 일정이 없습니다. 자동 배정 탭에서 먼저 배정을 실행해주세요.
         </p>
       ) : (
-        <CalendarView />
+        <CalendarView onDateClick={date => setEditingDate(date)} />
+      )}
+
+      {editingDate && (
+        <EditModal
+          date={editingDate}
+          onClose={() => setEditingDate(null)}
+        />
       )}
     </div>
   )
