@@ -86,7 +86,7 @@ Assignment = {
   junior: string | null, // Member.id
   temp: string | null,   // Member.id (Optional)
   isSpecial: boolean,    // 특별 미사 여부
-  isAllAttend: boolean,  // 첫째 주 금요일 전체 참여 여부
+  isAllAttend: boolean,  // 첫째 주 금요일 전체 참여 여부 (성인 복사단 담당, 어린이는 미사만 참석)
   extraSenior: string | null, // 특별 미사 추가 대복사 id
   extraJunior: string | null, // 특별 미사 추가 소복사 id
 }
@@ -145,7 +145,9 @@ runSchedule(members, year, month)
 
 1. **해당 월의 미사 날짜 목록 생성**
    - 매주 일요일 (교중 미사)
-   - 매주 금요일 (평일 미사)
+   - 매주 토요일 (토요 미사)
+   - 매주 월요일 (평일 미사)
+   - 매주 화요일 (평일 미사)
 
 2. **첫째 주 금요일 표시**
    - `isAllAttend: true` 로 설정, 배정 알고리즘 스킵 (전원 참여)

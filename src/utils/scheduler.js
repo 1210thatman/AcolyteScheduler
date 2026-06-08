@@ -6,7 +6,8 @@ function getMassDates(year, month) {
     const dateObj = new Date(year, month - 1, d)
     const dayOfWeek = dateObj.getDay()
 
-    if (dayOfWeek === 0 || dayOfWeek === 5) {
+    // 일요일(0), 월요일(1), 화요일(2), 토요일(6)
+    if (dayOfWeek === 0 || dayOfWeek === 1 || dayOfWeek === 2 || dayOfWeek === 6) {
       const mm = String(month).padStart(2, '0')
       const dd = String(d).padStart(2, '0')
       dates.push(`${year}-${mm}-${dd}`)
@@ -16,15 +17,29 @@ function getMassDates(year, month) {
   return dates
 }
 
+function getFirstFriday(year, month) {
+  const daysInMonth = new Date(year, month, 0).getDate()
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(year, month - 1, d)
+    if (dateObj.getDay() === 5) {
+      const mm = String(month).padStart(2, '0')
+      const dd = String(d).padStart(2, '0')
+      return `${year}-${mm}-${dd}`
+    }
+  }
+  return null
+}
+
 export function runSchedule(members, year, month) {
   if (members.length === 0) return []
 
   const massDates = getMassDates(year, month)
+  const firstFriday = getFirstFriday(year, month)
 
-  const firstFriday = massDates.find(dateStr => {
-    const [y, m, d] = dateStr.split('-').map(Number)
-    return new Date(y, m - 1, d).getDay() === 5
-  })
+  // 첫째 금요일을 날짜 목록에 끼워넣고 날짜순 정렬
+  const allDates = firstFriday
+    ? [...massDates, firstFriday].sort()
+    : massDates
 
   const assignCount = {}
   members.forEach(m => {
@@ -33,7 +48,7 @@ export function runSchedule(members, year, month) {
 
   const assignments = []
 
-  for (const dateStr of massDates) {
+  for (const dateStr of allDates) {
     if (dateStr === firstFriday) {
       assignments.push({
         date: dateStr,
