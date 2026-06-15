@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useScheduler } from '../hooks/useScheduler'
 import { runSchedule } from '../utils/scheduler'
+import { MemberManager } from './MemberManager'
+import { PriorityAssignment } from './PriorityAssignment'
+import { NotificationSettings } from './NotificationSettings'
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -17,6 +20,7 @@ export function AutoScheduler() {
   const navigate = useNavigate()
 
   const [preview, setPreview] = useState(null)
+  const [showMemberManager, setShowMemberManager] = useState(false)
 
   function getMemberName(id) {
     if (!id) return null
@@ -36,9 +40,12 @@ export function AutoScheduler() {
 
   if (members.length === 0) {
     return (
-      <p className="text-center text-gray-500 py-20 text-base">
-        단원이 등록되어 있지 않습니다. 먼저 단원을 추가해주세요.
-      </p>
+      <div className="space-y-6">
+        <p className="text-center text-gray-500 py-8 text-base">
+          단원이 등록되어 있지 않습니다. 아래에서 단원을 추가해주세요.
+        </p>
+        <MemberManager />
+      </div>
     )
   }
 
@@ -47,6 +54,23 @@ export function AutoScheduler() {
       <p className="text-base text-gray-500">
         {currentYear}년 {currentMonth}월 배정을 자동으로 생성합니다.
       </p>
+
+      <div>
+        <button
+          className="w-full min-h-[48px] px-4 py-3 bg-gray-200 text-gray-800 text-base font-semibold rounded-lg"
+          onClick={() => setShowMemberManager(!showMemberManager)}
+        >
+          {showMemberManager ? '단원 정보 닫기' : '단원 정보 수정'}
+        </button>
+
+        {showMemberManager && (
+          <div className="mt-4">
+            <MemberManager />
+          </div>
+        )}
+      </div>
+
+      <PriorityAssignment members={members} />
 
       {!preview && (
         <button
@@ -120,6 +144,8 @@ export function AutoScheduler() {
           </div>
         </>
       )}
+
+      <NotificationSettings />
     </div>
   )
 }
